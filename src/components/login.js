@@ -11,13 +11,16 @@ function Login() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const user = authenticate(form);
-        if(user) {
-            dispatch(login(user));
-            navigate(user.role === 'admin' ? '/admin' : '/dashboard');
-        } else {
-            alert('Invalid Credentials');
+        if (!form.email || !form.password) {
+          return alert('All fields are required');
         }
+        try {
+          const data = authenticate(form);
+          dispatch(login(data.user));
+          navigate(data.user.role === 'admin' ? '/admin' : '/dashboard');
+        } catch (err) {
+          alert('Invalid credentials');
+        }    
     };
 
     return (
@@ -26,6 +29,10 @@ function Login() {
             <input type="email" placeholder="Email" onChange={(e) => setForm({ ...form, email: e.target.value })} required />
             <input type="password" placeholder="Password" onChange={(e) => setForm({ ...form, password: e.target.value })} required />
             <button type="submit">Login</button>
+
+            <p style={{ marginTop: '15px', textAlign: 'center' }}>
+                New user? <a href="/register">Register here</a>
+            </p>
         </form>
     );
 }
